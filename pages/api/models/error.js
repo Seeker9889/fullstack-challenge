@@ -1,4 +1,4 @@
-export function error(ex) {
+export function apiError(ex) {
 	return {
 		isError: true,
 		msg: 'API Communication Error',
