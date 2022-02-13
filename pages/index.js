@@ -13,12 +13,14 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState('')
   const [profileSelection, setProfileSelection] = useState('')
   
-  const searchController = new AbortController();
-  const profileController = new AbortController();
+  let searchController = new AbortController();
+  let profileController = new AbortController();
   const onPageIncrement = async (newPage) => {
 	  
   }
   const onTermUpdate = async (term) => {
+	  searchController.abort()
+	  searchController = new AbortController();
 	  if (term && term.length > 0) {
 		  try {
 			  const searchResults = await axios.get('/api/people/search/' + term, {
@@ -32,13 +34,10 @@ export default function Home() {
 		  }
 	  }
 	  else {
-		  searchController.abort()
-		  searchController = new AbortController();
 		  setSearchResults(null)
 	  }
   }
   const onPersonSelect = async (personId) => {
-	  console.log(personId)
 	  if (personId && personId > 0) {
 		  try {
 			  const profileSelection = await axios.get('/api/profile/' + personId, {
