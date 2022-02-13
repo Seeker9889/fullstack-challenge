@@ -1,16 +1,26 @@
 import cache from 'memory-cache'
 import axios from 'axios'
+import * as constants from '../models/constants'
 import {apiError} from '../models/error'
+import {logApi} from '../util/logger'
 
-const root = 'https://swapi.dev/api/'
+const root = process.env.SWAPI_ROOT
 
-let getByIdUrl = (service, id) => root + service + '/' + id
+// Remove all but digits
+const idRegex = /[^0-9]/g
+let sanitizeId = (input) => input.toString().replace(idRegex,'')
+
+// Remove all but letters, digits, and - for, e.g., R2-D2
+const searchRegex = /[^a-zA-Z0-9-]/g
+let sanitizeSearch = (input) => input.toString().replace(searchRegex,'')
+
+let getByIdUrl = (service, unsanitizedId) => root + service + '/' + sanitizeId(unsanitizedId)
 let getAllUrl = (service) => root + service
-let searchUrl = (service, term, page) => root + service + '/?search=' + term + '&page=' + page
+let searchUrl = (service, unsanitizedTerm, page) => root + service + '/?search=' + sanitizeSearch(unsanitizedTerm) + '&page=' + page
+
 
 async function callSwapi(req) {
 	try {
-		console.log(req)
 		const res = await axios.get(req)
 		return res.data
 	} catch(ex) {
@@ -19,6 +29,8 @@ async function callSwapi(req) {
 	}
 }
 
+
+// Cache children (ships, species, films) responses for SWAPI_CACHE_TIMEOUT, default 5 min
 async function getChildren(urls) {
 	let result = []
 	if (!urls || urls.length < 1) {
@@ -26,9 +38,15 @@ async function getChildren(urls) {
 	}
 	
 	for (const url of urls) {
-		const res = await callSwapi(url)
-		if (res && !res.isError) {
-			result.push(res)
+		const cacheRes = cache.get(url)
+		if (cacheRes) {
+			result.push(cacheRes)
+		} else {
+			const res = await callSwapi(url)
+			if (res && !res.isError) {
+				cache.put(url, res, constants.SWAPI_CACHE_TIMEOUT)
+				result.push(res)
+			}
 		}
 	}
 	
@@ -41,10 +59,21 @@ export async function person(id) {
 }
 
 export async function searchPeople(unsanitizedTerm, page=1) {
-	const regex = /[^a-zA-Z0-9-]/g
-	const term = unsanitizedTerm.replace(regex,'')
-	const req = searchUrl('people', term, page)
-	return await callSwapi(req)
+	const req = searchUrl('people', unsanitizedTerm, page)
+	const rawResult = await callSwapi(req)
+	
+	const result = {
+		next: rawResult.next,
+		results: rawResult.results.map(x => ({ //Parens for object literal in lambda
+			name: x.name,
+			height: x.height,
+			weight: x.mass,
+			hairColor: x.hair_color,
+			dob: x.birth_year
+		}))
+	}
+	
+	return result
 }
 
 export async function profile(id) {

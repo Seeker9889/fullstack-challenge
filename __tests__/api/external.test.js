@@ -1,4 +1,4 @@
-import {searchPeople, person, film, ship, species, peopleCount, profile} from '../../pages/api/external/swapi'
+import {searchPeople, person, film, ship, species, peopleCount, profile} from '../../gateway/swapi'
 import axios from 'axios'
 
 // Data
@@ -7,6 +7,8 @@ const movie1 = require('../data/film1')
 const ship2 = require('../data/ship2')
 const people = require('../data/people')
 const species1 = require('../data/species1');
+const search1 = require('../data/search1');
+const search2 = require('../data/search2');
 
 const malpeople100 = require('../data/mal-people100');
 const malFilm15 = require('../data/mal-film15');
@@ -15,7 +17,7 @@ const malShip100 = require('../data/mal-ship100');
 const malShip101 = require('../data/mal-ship101');
 
 // Setup
-//jest.mock('axios');
+jest.mock('axios');
 
 describe('shallow swapi call', () => {
 	beforeEach(() => {
@@ -49,6 +51,14 @@ describe('shallow swapi call', () => {
 	it('gets name from species endpoint', async () => {
 		axios.get.mockResolvedValueOnce(species1)
 		const res = await species(1)
+		const name = res.name
+		
+		expect(axios.get).toHaveBeenCalledWith('https://swapi.dev/api/species/1');
+		expect(name).toEqual('Human')
+	})
+	it('gets name from species endpoint with bad id', async () => {
+		axios.get.mockResolvedValueOnce(species1)
+		const res = await species('@#1a')
 		const name = res.name
 		
 		expect(axios.get).toHaveBeenCalledWith('https://swapi.dev/api/species/1');
@@ -116,13 +126,28 @@ describe('deep swapi call', () => {
 })
 
 
-describe('shallow swapi call', () => {
+describe('swapi search', () => {
 	beforeEach(() => {
 		axios.get.mockReset()
 	})
 	
 	it('gets name from people endpoint', async () => {
-		const res = await searchPeople('wa')
-		console.log(res)
+		axios.get.mockImplementation((url) => {
+			switch (url) {
+				case 'https://swapi.dev/api/people/?search=a&page=1':
+				case 'https://swapi.dev/api/people/?search=a&page=1/':
+					return Promise.resolve(search1)
+				case 'https://swapi.dev/api/people/?search=a&page=2':
+				case 'https://swapi.dev/api/people/?search=a&page=2/':
+					return Promise.resolve(search2)
+				default:
+					return Promise.reject(new Error('unexpected call to '+ url))
+			}
+		})
+		const res1 = await searchPeople('a', 1)
+		const res2 = await searchPeople('a', 2)
+		
+		expect(res1.results[0].name).toEqual('Luke Skywalker')
+		expect(res2.results[0].name).toEqual('Han Solo')
 	})
 })
