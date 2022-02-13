@@ -1,31 +1,44 @@
 .container {
   padding: 0 2rem;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  position: relative;
 }
 
 .main {
-  min-height: 100vh;
-  padding: 4rem 0;
+  padding: 3rem 0;
   flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+.search-area {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  padding: 1rem 0;
+  align-items: center;
+}
+
 .footer {
   display: flex;
   flex: 1;
-  padding: 2rem 0;
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
 }
 
-.footer a {
+.footer-contents {
   display: flex;
   justify-content: center;
+  padding: .5rem 0;
   align-items: center;
   flex-grow: 1;
+  gap:5px;
 }
 
 .title a {
@@ -71,6 +84,20 @@
   justify-content: center;
   flex-wrap: wrap;
   max-width: 800px;
+}
+
+.tray {
+	display:flex;
+	flex: 1;
+	max-width: 50rem;
+	overflow-x: auto;
+	gap:3px;
+}
+
+.tray-options {
+	display:flex;
+	flex: 1;
+	min-width: 10rem;
 }
 
 .card {

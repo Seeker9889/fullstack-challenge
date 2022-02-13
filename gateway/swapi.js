@@ -8,15 +8,15 @@ const root = process.env.SWAPI_ROOT
 
 // Remove all but digits
 const idRegex = /[^0-9]/g
-let sanitizeId = (input) => input.toString().replace(idRegex,'')
+const getId = (input) => input.toString().replace(idRegex,'')
 
 // Remove all but letters, digits, and - for, e.g., R2-D2
 const searchRegex = /[^a-zA-Z0-9-]/g
-let sanitizeSearch = (input) => input.toString().replace(searchRegex,'')
+const sanitizeSearch = (input) => input.toString().replace(searchRegex,'')
 
-let getByIdUrl = (service, unsanitizedId) => root + service + '/' + sanitizeId(unsanitizedId)
-let getAllUrl = (service) => root + service
-let searchUrl = (service, unsanitizedTerm, page) => root + service + '/?search=' + sanitizeSearch(unsanitizedTerm) + '&page=' + page
+const getByIdUrl = (service, unsanitizedId) => root + service + '/' + getId(unsanitizedId)
+const getAllUrl = (service) => root + service
+const searchUrl = (service, unsanitizedTerm, page) => root + service + '/?search=' + sanitizeSearch(unsanitizedTerm) + '&page=' + page
 
 
 async function callSwapi(req) {
@@ -32,7 +32,7 @@ async function callSwapi(req) {
 
 // Cache children (ships, species, films) responses for SWAPI_CACHE_TIMEOUT, default 5 min
 async function getChildren(urls) {
-	let result = []
+	const result = []
 	if (!urls || urls.length < 1) {
 		return result
 	}
@@ -69,7 +69,8 @@ export async function searchPeople(unsanitizedTerm, page=1) {
 			height: x.height,
 			weight: x.mass,
 			hairColor: x.hair_color,
-			dob: x.birth_year
+			dob: x.birth_year,
+			id: getId(x.url) // e.g. get "3" from "https://swapi.dev/api/people/3/"
 		}))
 	}
 	
