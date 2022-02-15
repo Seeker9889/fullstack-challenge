@@ -1,4 +1,5 @@
 import { useCallback, useState} from 'react'
+import styles from '../styles/Home.module.css'
 
 export default function Searchbar({onTermUpdate}) {
 	
@@ -15,6 +16,7 @@ export default function Searchbar({onTermUpdate}) {
 	return(
 	  <div>
 	    <input
+		  className={styles['search-box']}
 		  onChange={onChange}
 		  placeholder='Search profiles'
 		  type='text'

@@ -24,6 +24,13 @@
   align-items: center;
 }
 
+.search-box {
+  border: 1px solid #eeeeee;
+  padding: .5rem .5rem .5rem 1rem;
+  border-radius: 5px;
+  font-size: 2rem;
+}
+
 .footer {
   display: flex;
   flex: 1;
@@ -51,7 +58,7 @@
   overflow-y: auto;
   gap:3px;
   list-style: none;
-  min-height: 20rem;
+  min-height: 30rem;
   max-width: 100%;
 }
 
