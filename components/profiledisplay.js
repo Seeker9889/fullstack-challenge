@@ -55,11 +55,11 @@ export default function ProfileDisplay({profileSelection}) {
 			  </tr>
 			  <tr>
 			  <td>Height:</td>
-			  <td className={styles['profile-datum']}>{profileSelection.height}</td>
+			  <td className={styles['profile-datum']}>{profileSelection.height} {' '}cm</td>
 			  </tr>
 			  <tr>
 			  <td>Weight:</td>
-			  <td className={styles['profile-datum']}>{profileSelection.weight}</td>
+			  <td className={styles['profile-datum']}>{profileSelection.weight} {' '}kg</td>
 			  </tr>
 			  <tr>
 			  <td>Hair Color:</td>
