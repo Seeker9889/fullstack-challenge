@@ -9,6 +9,9 @@ export default function ProfileDisplay({profileSelection}) {
 			output.push(<span>{i}</span>)
 			output.push(<br/>)
 		}
+		if (output.length === 0) {
+			output.push(<span>None</span>)
+		}
 		return output
 	}
 	
