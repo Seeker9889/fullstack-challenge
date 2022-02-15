@@ -26,4 +26,15 @@ Navigate to [http://localhost:3000](http://localhost:3000).
 npm run test
 ```
 
-  
+## Code guide
+components: react hook components
+
+gateway: api used to interface with SWAPI
+
+models: re-usable object creators and constants
+
+pages: base pages
+
+pages/api: Thin api routes to connect frontend to gateway
+
+util: Utility functions for backend
